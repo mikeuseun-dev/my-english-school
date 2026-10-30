@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나만의 영어 학교</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7fc;color:#18233b;font-family:system-ui,'Noto Sans KR',sans-serif}header{background:#203a70;color:white;padding:25px 18px}header h1{margin:0 0 6px;font-size:26px}header p{margin:0;color:#d9e6ff}main{max-width:650px;margin:auto;padding:18px}.panel{background:white;border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 3px 16px #172b4d12}h2{font-size:19px;margin:0 0 14px}.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.categories{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}button{font:inherit;cursor:pointer;border:1px solid #d4ddeb;background:#fff;border-radius:11px;padding:13px 8px;color:#203a70;font-weight:700}button.active{background:#254f9d;color:white;border-color:#254f9d}button:disabled{opacity:.55;cursor:default}.muted{color:#65748c;font-size:14px}.question{font-size:20px;line-height:1.6;white-space:pre-line;margin:14px 0}.answers{display:grid;gap:9px}.answers button{text-align:left;padding:14px}.answers button.correct{border-color:#15803d;background:#e8f7ed;color:#166534}.answers button.wrong{border-color:#c24141;background:#fff0f0;color:#991b1b}.explain{background:#f1f6ff;border-left:4px solid #3d6cbd;padding:14px;border-radius:8px;line-height:1.7;margin-top:15px}.primary{background:#254f9d;color:white;border-color:#254f9d;width:100%;margin-top:14px}.stats{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.hidden{display:none}.empty{padding:10px 0;color:#65748c}
+</style>
+</head>
+<body>
+<header><h1>📘 나만의 영어 학교</h1><p>기초부터 고등 영어까지, 내 속도로 공부하기</p></header>
+<main>
+<section class="panel"><h2>① 난이도 선택</h2><div class="choices" id="levels"><button class="active" data-level="기초">기초</button><button data-level="중등">중등</button><button data-level="고등">고등</button></div></section>
+<section class="panel"><h2>② 공부할 과목 선택</h2><div class="categories" id="categories"><button class="active" data-cat="영단어">📗 영단어</button><button data-cat="영문법">📐 영문법</button><button data-cat="영어 독해">📖 영어 독해</button><button data-cat="오답 복습">🔁 오답 복습</button></div></section>
+<section class="panel"><div class="stats"><strong id="heading">기초 · 영단어</strong><span class="muted" id="counter"></span></div><div id="question" class="question"></div><div id="answers" class="answers"></div><div id="feedback" class="explain hidden"></div><button id="next" class="primary hidden">다음 문제 →</button></section>
+<section class="panel"><h2>📊 학습 기록</h2><div id="stats" class="muted"></div><p class="muted">기록은 현재 브라우저에 저장됩니다. 브라우저 데이터를 삭제하거나 다른 기기를 사용하면 사라질 수 있어요.</p></section>
+</main>
+<script>
+const questions=[
+{level:'기초',cat:'영단어',q:'apple의 뜻은 무엇일까요?',a:['사과','의자','학교'],correct:0,why:'apple은 사과라는 뜻의 명사입니다. 예: I eat an apple. (나는 사과 하나를 먹는다.)'},
+{level:'기초',cat:'영단어',q:'happy의 뜻은 무엇일까요?',a:['슬픈','행복한','피곤한'],correct:1,why:'happy는 행복한, 기쁜이라는 뜻의 형용사입니다.'},
+{level:'기초',cat:'영문법',q:'빈칸에 알맞은 말은?\nI ___ a student.',a:['am','is','are'],correct:0,why:'주어가 I일 때 현재형 be동사는 am을 씁니다. He/She는 is, You/We/They는 are를 씁니다.'},
+{level:'기초',cat:'영문법',q:'올바른 문장을 고르세요.',a:['She like cats.','She likes cats.','She liking cats.'],correct:1,why:'현재시제에서 주어가 She처럼 3인칭 단수이면 일반동사 like에 -s를 붙여 likes라고 씁니다.'},
+{level:'기초',cat:'영어 독해',q:'I have a dog. It is small.\n어떤 동물을 키우나요?',a:['고양이','개','새'],correct:1,why:'I have a dog는 나는 개를 키운다는 뜻입니다. It is small은 그 개가 작다는 설명이에요.'},
+{level:'기초',cat:'영어 독해',q:'Mina drinks water after running.\n미나는 언제 물을 마시나요?',a:['달리기 전','잠자기 전','달리기 후'],correct:2,why:'after는 ~한 후에라는 뜻입니다. after running은 달리기를 한 후에라는 의미입니다.'},
+{level:'중등',cat:'영단어',q:'decide의 뜻은 무엇일까요?',a:['결정하다','잊어버리다','비교하다'],correct:0,why:'decide는 결정하다는 뜻입니다. decide to study는 공부하기로 결정하다는 의미예요.'},
+{level:'중등',cat:'영단어',q:'environment의 뜻은 무엇일까요?',a:['경험','환경','발명'],correct:1,why:'environment는 환경입니다. protect the environment는 환경을 보호하다는 뜻이에요.'},
+{level:'중등',cat:'영문법',q:'빈칸에 알맞은 말은?\nI have lived here ___ 2020.',a:['for','since','during'],correct:1,why:'since는 특정 시작 시점(2020년부터)을 나타냅니다. for는 for three years처럼 기간을 나타낼 때 씁니다.'},
+{level:'중등',cat:'영문법',q:'빈칸에 알맞은 말은?\nIf it rains, I ___ at home.',a:['stay','will stay','stayed'],correct:1,why:'미래의 가능한 조건을 말할 때 If + 현재형, 주절에는 will + 동사원형을 자주 씁니다.'},
+{level:'중등',cat:'영어 독해',q:'Jin missed the bus, so he walked to school.\n진이 걸어서 학교에 간 이유는?',a:['버스를 놓쳐서','운동을 좋아해서','학교가 가까워서'],correct:0,why:'missed the bus는 버스를 놓쳤다는 뜻입니다. so는 앞의 일로 인한 결과를 연결해 줍니다.'},
+{level:'중등',cat:'영어 독해',q:'Although the test was difficult, Sora did not give up.\n소라는 어떻게 행동했나요?',a:['시험을 포기했다','시험을 미뤘다','포기하지 않았다'],correct:2,why:'Although는 비록 ~이지만이라는 뜻입니다. did not give up은 포기하지 않았다는 의미예요.'},
+{level:'고등',cat:'영단어',q:'significant의 뜻으로 가장 알맞은 것은?',a:['사소한','중요한','일시적인'],correct:1,why:'significant는 중요한, 상당한이라는 뜻입니다. a significant change는 중요한 변화라는 의미입니다.'},
+{level:'고등',cat:'영단어',q:'inevitable의 뜻으로 가장 알맞은 것은?',a:['불가피한','예상 밖의','독립적인'],correct:0,why:'inevitable은 피할 수 없는, 불가피한이라는 뜻입니다.'},
+{level:'고등',cat:'영문법',q:'빈칸에 알맞은 말은?\nHad I known the truth, I ___ differently.',a:['act','will act','would have acted'],correct:2,why:'Had I known은 If I had known을 도치한 형태입니다. 과거 사실과 반대되는 가정이므로 would have + 과거분사를 씁니다.'},
+{level:'고등',cat:'영문법',q:'어법상 올바른 문장은?',a:['Not only he was late but he forgot his book.','Not only was he late, but he also forgot his book.','Not only late he was but forgot his book.'],correct:1,why:'부정어 Not only가 문장 맨 앞에 오면 조동사나 be동사가 주어 앞으로 오는 도치가 일어납니다.'},
+{level:'고등',cat:'영어 독해',q:'Technology can improve productivity. However, its benefits are not shared equally.\n글의 핵심은?',a:['기술의 혜택은 불균등하게 분배될 수 있다','기술은 언제나 해롭다','생산성은 중요하지 않다'],correct:0,why:'However는 역접을 나타냅니다. 첫 문장의 장점 뒤에 혜택이 평등하게 나뉘지 않는다는 한계를 제시합니다.'},
+{level:'고등',cat:'영어 독해',q:'People often assume that more choices lead to greater satisfaction. Yet too many options can make decisions harder.\n필자의 주장은?',a:['선택지가 많을수록 언제나 좋다','선택은 불필요하다','선택지가 너무 많으면 결정이 어려워질 수 있다'],correct:2,why:'Yet은 앞의 통념과 반대되는 내용을 이끕니다. 핵심은 지나치게 많은 선택지가 결정에 부담을 준다는 것입니다.'}
+];
+const store='englishSchoolV2';
+let saved;try{saved=JSON.parse(localStorage.getItem(store))||{}}catch(e){saved={}}
+let missed=new Set(Array.isArray(saved.missed)?saved.missed:[]),attempts=Number(saved.attempts)||0,correctCount=Number(saved.correct)||0;
+let level='기초',cat='영단어',position=0,answered=false,current=[];
+const el=id=>document.getElementById(id);
+function save(){try{localStorage.setItem(store,JSON.stringify({missed:[...missed],attempts,correct:correctCount}))}catch(e){}}
+function updateStats(){el('stats').textContent=`총 ${attempts}문제 풀이 · 정답 ${correctCount}개 · 복습할 문제 ${missed.size}개`;}
+function selectButtons(group,attribute,value){document.querySelectorAll(`#${group} button`).forEach(b=>b.classList.toggle('active',b.dataset[attribute]===value));}
+function choose(){position=0;current=questions.map((q,i)=>({...q,id:i})).filter(q=>cat==='오답 복습'?missed.has(q.id):q.level===level&&q.cat===cat);render();}
+function render(){answered=false;el('heading').textContent=cat==='오답 복습'?'오답 복습':`${level} · ${cat}`;el('feedback').classList.add('hidden');el('next').classList.add('hidden');el('answers').innerHTML='';updateStats();
+if(!current.length){el('counter').textContent='';el('question').textContent=cat==='오답 복습'?'복습할 오답이 없습니다. 문제를 풀어보세요!':'준비된 문제가 없습니다.';return;}
+if(position>=current.length){el('counter').textContent='완료';el('question').textContent='🎉 이번 학습을 마쳤습니다!';el('next').textContent='처음부터 다시 풀기';el('next').classList.remove('hidden');return;}
+const q=current[position];el('counter').textContent=`${position+1} / ${current.length}`;el('question').textContent=q.q;
+q.a.forEach((choice,i)=>{const b=document.createElement('button');b.textContent=`${i+1}. ${choice}`;b.onclick=()=>answer(i);el('answers').appendChild(b);});}
+function answer(i){if(answered)return;answered=true;const q=current[position],right=i===q.correct;attempts++;if(right){correctCount++;missed.delete(q.id)}else missed.add(q.id);save();
+[...el('answers').children].forEach((b,j)=>{b.disabled=true;if(j===q.correct)b.classList.add('correct');else if(j===i)b.classList.add('wrong');});
+el('feedback').textContent=(right?'✅ 정답입니다!':'❌ 아쉬워요. 정답: '+q.a[q.correct])+'\n\n'+q.why;el('feedback').style.whiteSpace='pre-line';el('feedback').classList.remove('hidden');el('next').textContent='다음 문제 →';el('next').classList.remove('hidden');updateStats();}
+el('levels').onclick=e=>{const b=e.target.closest('button');if(!b)return;level=b.dataset.level;selectButtons('levels','level',level);choose();};
+el('categories').onclick=e=>{const b=e.target.closest('button');if(!b)return;cat=b.dataset.cat;selectButtons('categories','cat',cat);choose();};
+el('next').onclick=()=>{if(position>=current.length){choose();return;}position++;render();};
+choose();
+</script>
+</body>
+</html>
